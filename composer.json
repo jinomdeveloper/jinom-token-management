@@ -1,14 +1,14 @@
 {
-    "name": "jinom/keycloak-sdk",
+    "name": "jinomdeveloper/jinom-token-management",
     "description": "Laravel SDK for Keycloak token management - store, refresh, and introspect OAuth tokens",
     "keywords": [
-        "jinom",
+        "jinomdeveloper",
         "laravel",
         "keycloak",
         "oauth",
         "token-management"
     ],
-    "homepage": "https://github.com/jinom/keycloak-sdk",
+    "homepage": "https://github.com/jinomdeveloper/jinom-token-management",
     "license": "MIT",
     "authors": [
         {
