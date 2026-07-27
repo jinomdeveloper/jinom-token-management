@@ -45,4 +45,3 @@ interface TokenManagerInterface
      */
     public function getClientToken(): ?string;
 }
-

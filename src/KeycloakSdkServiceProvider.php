@@ -3,6 +3,7 @@
 namespace Jinom\Keycloak;
 
 use Jinom\Keycloak\Contracts\TokenManagerInterface;
+use Jinom\Keycloak\Services\KeycloakAdminManager;
 use Jinom\Keycloak\Services\TokenManager;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -24,8 +25,8 @@ class KeycloakSdkServiceProvider extends PackageServiceProvider
         });
 
         // Register KeycloakAdminManager as singleton
-        $this->app->singleton(\Jinom\Keycloak\Services\KeycloakAdminManager::class, function ($app) {
-            return new \Jinom\Keycloak\Services\KeycloakAdminManager(
+        $this->app->singleton(KeycloakAdminManager::class, function ($app) {
+            return new KeycloakAdminManager(
                 $app->make(TokenManager::class)
             );
         });
@@ -37,7 +38,7 @@ class KeycloakSdkServiceProvider extends PackageServiceProvider
         $this->app->singleton(KeycloakSdk::class, function ($app) {
             return new KeycloakSdk(
                 $app->make(TokenManager::class),
-                $app->make(\Jinom\Keycloak\Services\KeycloakAdminManager::class)
+                $app->make(KeycloakAdminManager::class)
             );
         });
 

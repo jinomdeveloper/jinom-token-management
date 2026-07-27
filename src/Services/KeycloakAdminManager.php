@@ -36,9 +36,10 @@ class KeycloakAdminManager
     /**
      * Create a new user account in Keycloak.
      *
-     * @param array $userData User payload according to Keycloak Admin API UserRepresentation schema.
-     * @param string|null $adminToken Optional admin token. If null, service account client token will be used.
+     * @param  array  $userData  User payload according to Keycloak Admin API UserRepresentation schema.
+     * @param  string|null  $adminToken  Optional admin token. If null, service account client token will be used.
      * @return string Created Keycloak User ID if available from Location header, or empty string.
+     *
      * @throws KeycloakAdminException
      */
     public function createUser(array $userData, ?string $adminToken = null): string
@@ -52,8 +53,8 @@ class KeycloakAdminManager
                 ->post($url, $userData);
 
             if (! $response->successful()) {
-                $errorDescription = $response->json('errorMessage') 
-                    ?? $response->json('error_description') 
+                $errorDescription = $response->json('errorMessage')
+                    ?? $response->json('error_description')
                     ?? $response->body();
 
                 Log::error('KeycloakSdk: User creation failed', [
@@ -70,6 +71,7 @@ class KeycloakAdminManager
             $location = $response->header('Location');
             if ($location) {
                 $parts = explode('/', $location);
+
                 return end($parts);
             }
 
@@ -85,11 +87,11 @@ class KeycloakAdminManager
     /**
      * Update user email in Keycloak.
      *
-     * @param string $keycloakUserId Keycloak User UUID.
-     * @param string $newEmail New email address.
-     * @param bool $emailVerified Whether the email should be marked as verified.
-     * @param string|null $adminToken Optional admin token.
-     * @return bool
+     * @param  string  $keycloakUserId  Keycloak User UUID.
+     * @param  string  $newEmail  New email address.
+     * @param  bool  $emailVerified  Whether the email should be marked as verified.
+     * @param  string|null  $adminToken  Optional admin token.
+     *
      * @throws KeycloakAdminException
      */
     public function updateUserEmail(string $keycloakUserId, string $newEmail, bool $emailVerified = false, ?string $adminToken = null): bool
@@ -108,8 +110,8 @@ class KeycloakAdminManager
                 ->put($url, $payload);
 
             if (! $response->successful()) {
-                $errorDescription = $response->json('errorMessage') 
-                    ?? $response->json('error_description') 
+                $errorDescription = $response->json('errorMessage')
+                    ?? $response->json('error_description')
                     ?? $response->body();
 
                 Log::error('KeycloakSdk: Update user email failed', [
@@ -135,11 +137,11 @@ class KeycloakAdminManager
     /**
      * Reset / change password for another user in Keycloak.
      *
-     * @param string $keycloakUserId Keycloak User UUID.
-     * @param string $newPassword New password string.
-     * @param bool $temporary Whether user is forced to change password on next login.
-     * @param string|null $adminToken Optional admin token.
-     * @return bool
+     * @param  string  $keycloakUserId  Keycloak User UUID.
+     * @param  string  $newPassword  New password string.
+     * @param  bool  $temporary  Whether user is forced to change password on next login.
+     * @param  string|null  $adminToken  Optional admin token.
+     *
      * @throws KeycloakAdminException
      */
     public function updateUserPassword(string $keycloakUserId, string $newPassword, bool $temporary = false, ?string $adminToken = null): bool
@@ -159,8 +161,8 @@ class KeycloakAdminManager
                 ->put($url, $payload);
 
             if (! $response->successful()) {
-                $errorDescription = $response->json('errorMessage') 
-                    ?? $response->json('error_description') 
+                $errorDescription = $response->json('errorMessage')
+                    ?? $response->json('error_description')
                     ?? $response->body();
 
                 Log::error('KeycloakSdk: Update user password failed', [

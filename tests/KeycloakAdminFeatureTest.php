@@ -1,26 +1,27 @@
 <?php
 
+use Illuminate\Support\Facades\Http;
 use Jinom\Keycloak\Facades\KeycloakSdk;
 
 it('tests creating user, updating email, and updating password via KeycloakAdminManager', function () {
     // 1. Mock HTTP Requests ke Keycloak Server
-    Illuminate\Support\Facades\Http::fake([
+    Http::fake([
         // Mock get client token (service account)
-        '*/protocol/openid-connect/token' => Illuminate\Support\Facades\Http::response([
+        '*/protocol/openid-connect/token' => Http::response([
             'access_token' => 'mocked-service-account-token',
             'expires_in' => 300,
         ], 200),
 
         // Mock create user endpoint
-        '*/admin/realms/*/users' => Illuminate\Support\Facades\Http::response(null, 201, [
+        '*/admin/realms/*/users' => Http::response(null, 201, [
             'Location' => 'https://keycloak.example.com/admin/realms/myrealm/users/generated-user-uuid-999',
         ]),
 
         // Mock update email endpoint
-        '*/admin/realms/*/users/generated-user-uuid-999' => Illuminate\Support\Facades\Http::response(null, 204),
+        '*/admin/realms/*/users/generated-user-uuid-999' => Http::response(null, 204),
 
         // Mock update/reset password endpoint
-        '*/admin/realms/*/users/generated-user-uuid-999/reset-password' => Illuminate\Support\Facades\Http::response(null, 204),
+        '*/admin/realms/*/users/generated-user-uuid-999/reset-password' => Http::response(null, 204),
     ]);
 
     // Config setup
