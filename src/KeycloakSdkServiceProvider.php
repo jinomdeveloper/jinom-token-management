@@ -23,13 +23,21 @@ class KeycloakSdkServiceProvider extends PackageServiceProvider
             return new TokenManager;
         });
 
+        // Register KeycloakAdminManager as singleton
+        $this->app->singleton(\Jinom\Keycloak\Services\KeycloakAdminManager::class, function ($app) {
+            return new \Jinom\Keycloak\Services\KeycloakAdminManager(
+                $app->make(TokenManager::class)
+            );
+        });
+
         // Bind interface to implementation
         $this->app->bind(TokenManagerInterface::class, TokenManager::class);
 
         // Register main SDK class as singleton
         $this->app->singleton(KeycloakSdk::class, function ($app) {
             return new KeycloakSdk(
-                $app->make(TokenManager::class)
+                $app->make(TokenManager::class),
+                $app->make(\Jinom\Keycloak\Services\KeycloakAdminManager::class)
             );
         });
 

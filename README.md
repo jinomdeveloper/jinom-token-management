@@ -85,6 +85,59 @@ $clientToken = KeycloakSdk::getClientToken();
 Http::withToken($clientToken)->get('https://api.example.com/users');
 ```
 
+### Keycloak Admin Operations
+
+You can manage user accounts directly in Keycloak (Create User, Update Email, and Change/Reset Password).
+
+> **Token Note:** If `$adminToken` parameter is omitted or set to `null`, the SDK automatically uses the Service Account token (`getClientToken()`). Alternatively, you can pass a Super Admin Bearer Token explicitly.
+
+#### 1. Create User / Account
+
+```php
+use Jinom\Keycloak\Facades\KeycloakSdk;
+
+$keycloakUserId = KeycloakSdk::createUser([
+    'username' => 'johndoe',
+    'email' => 'john@example.com',
+    'firstName' => 'John',
+    'lastName' => 'Doe',
+    'enabled' => true,
+    'credentials' => [
+        [
+            'type' => 'password',
+            'value' => 'SecretPassword123!',
+            'temporary' => false,
+        ]
+    ]
+], adminToken: $superAdminToken); // $superAdminToken is optional
+```
+
+#### 2. Update User Email
+
+```php
+use Jinom\Keycloak\Facades\KeycloakSdk;
+
+KeycloakSdk::updateUserEmail(
+    keycloakUserId: 'uuid-user-target',
+    newEmail: 'newemail@example.com',
+    emailVerified: true,
+    adminToken: $superAdminToken // optional
+);
+```
+
+#### 3. Change / Reset User Password
+
+```php
+use Jinom\Keycloak\Facades\KeycloakSdk;
+
+KeycloakSdk::updateUserPassword(
+    keycloakUserId: 'uuid-user-target',
+    newPassword: 'NewSecurePassword123!',
+    temporary: false, // set true to force user to change password on next login
+    adminToken: $superAdminToken // optional
+);
+```
+
 ### Using Dependency Injection
 
 ```php
@@ -118,31 +171,38 @@ class MyController extends Controller
 | Create/Register user  | **Client Token** | System provisioning              |
 | Update user by self   | **User Token**   | User changing own data           |
 | Update user by system | **Client Token** | System/admin sync                |
+| Reset user password   | **Admin Token / Client Token** | Admin operation    |
 | Delete user           | **Client Token** | Admin operation                  |
 | Get own profile       | **User Token**   | User accessing own data          |
 | List all users        | **Client Token** | Admin/system operation           |
 
 ## API Reference
 
-| Method                                 | Description                                |
-| -------------------------------------- | ------------------------------------------ |
-| `storeTokens($userId, $tokenData)`     | Store tokens from OAuth callback           |
-| `getValidToken($userId)`               | Get valid user access token (auto-refresh) |
-| `getClientToken()`                     | Get client token (Client Credentials flow) |
-| `refreshToken($userId, $refreshToken)` | Manually refresh the access token          |
-| `clearTokens($userId)`                 | Clear all tokens for a user                |
-| `hasValidTokens($userId)`              | Check if user has valid tokens             |
-| `getTokenData($userId)`                | Get all stored token data                  |
-| `introspectToken($token)`              | Introspect token with Keycloak server      |
+| Method                                                        | Description                                      |
+| ------------------------------------------------------------- | ------------------------------------------------ |
+| `storeTokens($userId, $tokenData)`                            | Store tokens from OAuth callback                 |
+| `getValidToken($userId)`                                      | Get valid user access token (auto-refresh)       |
+| `getClientToken()`                                            | Get client token (Client Credentials flow)       |
+| `createUser($userData, $adminToken = null)`                   | Create a new user in Keycloak                    |
+| `updateUserEmail($keycloakUserId, $email, $verified, $token)` | Update user email in Keycloak                    |
+| `updateUserPassword($keycloakUserId, $pass, $temp, $token)`   | Reset/Change password for another user           |
+| `refreshToken($userId, $refreshToken)`                        | Manually refresh the access token                |
+| `clearTokens($userId)`                                        | Clear all tokens for a user                      |
+| `hasValidTokens($userId)`                                     | Check if user has valid tokens                   |
+| `getTokenData($userId)`                                       | Get all stored token data                        |
+| `introspectToken($token)`                                     | Introspect token with Keycloak server            |
 
-## Keycloak Setup for Client Credentials
+## Keycloak Setup for Service Account / Admin Operations
 
 1. Go to Keycloak Admin Console
 2. Select your realm
-3. Go to **Clients** → Select your client
-4. Enable **Service Account Enabled** under **Settings**
-5. Add required **Service Account Roles** under **Service Account Roles** tab
+3. Go to **Clients** → Select your client (e.g., `jinom-panel`)
+4. Enable **Client Authentication** and **Service Accounts Roles** under **Settings**
+5. Go to **Service Accounts Roles** tab → Click **Assign role**
+6. Change filter to **Filter by clients** → Select **realm-management**
+7. Assign roles: `manage-users`, `query-users`, or `realm-admin`
 
 ## License
 
 MIT
+

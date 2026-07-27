@@ -12,7 +12,10 @@ use Illuminate\Support\Facades\Facade;
  * @method static bool hasValidTokens(int|string $userId)
  * @method static array|null getTokenData(int|string $userId)
  * @method static array|null introspectToken(string $token)
- * @method static string|null getClientToken()
+ * @method static string createUser(array $userData, ?string $adminToken = null)
+ * @method static bool updateUserEmail(string $keycloakUserId, string $newEmail, bool $emailVerified = false, ?string $adminToken = null)
+ * @method static bool updateUserPassword(string $keycloakUserId, string $newPassword, bool $temporary = false, ?string $adminToken = null)
+ * @method static \Jinom\Keycloak\Services\KeycloakAdminManager admin()
  * @method static \Jinom\Keycloak\Services\TokenManager getTokenManager()
  *
  * @see \Jinom\Keycloak\KeycloakSdk

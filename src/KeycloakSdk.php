@@ -2,6 +2,7 @@
 
 namespace Jinom\Keycloak;
 
+use Jinom\Keycloak\Services\KeycloakAdminManager;
 use Jinom\Keycloak\Services\TokenManager;
 
 /**
@@ -12,12 +13,16 @@ use Jinom\Keycloak\Services\TokenManager;
  * - Auto-refresh expired tokens
  * - Introspect tokens
  * - Clear tokens on logout
+ * - Admin operations (create user, update email, reset password)
  */
 class KeycloakSdk
 {
     public function __construct(
-        protected TokenManager $tokenManager
-    ) {}
+        protected TokenManager $tokenManager,
+        protected ?KeycloakAdminManager $adminManager = null
+    ) {
+        $this->adminManager = $adminManager ?? new KeycloakAdminManager($this->tokenManager);
+    }
 
     /**
      * Store tokens from Keycloak callback
@@ -82,6 +87,38 @@ class KeycloakSdk
     public function getClientToken(): ?string
     {
         return $this->tokenManager->getClientToken();
+    }
+
+    /**
+     * Create a new user account in Keycloak
+     */
+    public function createUser(array $userData, ?string $adminToken = null): string
+    {
+        return $this->adminManager->createUser($userData, $adminToken);
+    }
+
+    /**
+     * Update user email in Keycloak
+     */
+    public function updateUserEmail(string $keycloakUserId, string $newEmail, bool $emailVerified = false, ?string $adminToken = null): bool
+    {
+        return $this->adminManager->updateUserEmail($keycloakUserId, $newEmail, $emailVerified, $adminToken);
+    }
+
+    /**
+     * Update/Reset password for another user in Keycloak (using admin token or service account)
+     */
+    public function updateUserPassword(string $keycloakUserId, string $newPassword, bool $temporary = false, ?string $adminToken = null): bool
+    {
+        return $this->adminManager->updateUserPassword($keycloakUserId, $newPassword, $temporary, $adminToken);
+    }
+
+    /**
+     * Get the KeycloakAdminManager instance
+     */
+    public function admin(): KeycloakAdminManager
+    {
+        return $this->adminManager;
     }
 
     /**
