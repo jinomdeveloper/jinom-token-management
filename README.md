@@ -5,7 +5,7 @@ Laravel package for Keycloak token management - store, refresh, introspect, and 
 ## Installation
 
 ```bash
-composer require jinom/keycloak-sdk
+composer require jinomdeveloper/jinom-token-management
 ```
 
 Publish the config file:
